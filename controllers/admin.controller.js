@@ -197,7 +197,7 @@ export const getstudbydata = async (req, res) => {
     const { id } = req.params;
     const buses = await ScanData.find(
       { busNumber: id },
-      { busNumber: 1, rollNo: 1, firstName: 1, lastName: 1 }
+      { busNumber: 1, rollNo: 1, firstName: 1, lastName: 1, operator_id:1 }
     );
     res.status(200).json(buses);
   } catch (err) {
@@ -208,7 +208,7 @@ export const getstudbydata = async (req, res) => {
 export const filteredCities = async (req, res) => {
   try {
     const { city } = req.body;
-    const students = await Student.find({ cityName: city, date:today });
+    const students = await Student.find({ cityName: city });
     let arr = [];
     for (let i = 0; i < students.length; i++) {
       arr.push(students[i].rollno);
