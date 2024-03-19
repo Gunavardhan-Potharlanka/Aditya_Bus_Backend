@@ -66,6 +66,29 @@ export const registerAdmin = async (req, res) => {
         });
     } else {
       return res.status(400).send("Username Already Exists");
+
+        if (!isUserExists) {
+            let hashedPassword = await bcrypt.hash(password, 10)
+            const admin = new Admin({
+                firstName: firstname,
+                lastName: lastname,
+                phoneNumber: phoneNumber,
+                username: username,
+                password: hashedPassword,
+                role: role
+            })
+            await admin.save().then((data) => {
+                return res.send({ success: 1 }).status(200)
+            }).catch((err) => {
+                return res.status(500).send({ ErrorMessage: "Internal Server Error", error: err })
+            })
+        }
+        else {
+            return res.status(400).send("Username Already Exists")
+        }
+    } catch (error) {
+        return res.status(500).send({ Error: "Internal Server Error", error: error })
+
     }
   } catch (error) {
     return res
