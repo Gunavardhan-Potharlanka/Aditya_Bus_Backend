@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import BusCount from "../models/busCount.model.js";
 import Student from "../models/student.model.js";
-import ScanData from "../models/scan_data.model.js";
+import ScanData from "../models/scanData.model.js";
 import Operator from "../models/operator.model.js";
 import Fraud from "../models/fraud.model.js";
 const today = new Date()
@@ -66,31 +66,9 @@ export const registerAdmin = async (req, res) => {
         });
     } else {
       return res.status(400).send("Username Already Exists");
-
-        if (!isUserExists) {
-            let hashedPassword = await bcrypt.hash(password, 10)
-            const admin = new Admin({
-                firstName: firstname,
-                lastName: lastname,
-                phoneNumber: phoneNumber,
-                username: username,
-                password: hashedPassword,
-                role: role
-            })
-            await admin.save().then((data) => {
-                return res.send({ success: 1 }).status(200)
-            }).catch((err) => {
-                return res.status(500).send({ ErrorMessage: "Internal Server Error", error: err })
-            })
-        }
-        else {
-            return res.status(400).send("Username Already Exists")
-        }
-    } catch (error) {
-        return res.status(500).send({ Error: "Internal Server Error", error: error })
-
+    } 
     }
-  } catch (error) {
+   catch (error) {
     return res
       .status(500)
       .send({ Error: "Internal Server Error", error: error });
@@ -198,13 +176,16 @@ export const getAdminDetails = async (req, res) => {
 
 export const getAllbuses = async (req, res) => {
   try {
-    const buses = await ScanData.find({date:today}, { busNumber: 1 });
+    const date = new Date().toISOString().split('T')[0].split('-').reverse().join('-')
+    console.log(date)
+    const buses = await ScanData.find({date:date}, { busNumber: 1 });
     const busCounts = Object.entries(
       buses.reduce((acc, bus) => {
         acc[bus.busNumber] = (acc[bus.busNumber] || 0) + 1;
         return acc;
       }, {})
     ).map(([busNumber, count]) => ({ busNumber: parseInt(busNumber), count }));
+    console.log(busCounts);
     res.status(200).json(busCounts);
   } catch (err) {
     console.log(err);
@@ -227,7 +208,7 @@ export const getstudbydata = async (req, res) => {
 export const filteredCities = async (req, res) => {
   try {
     const { city } = req.body;
-    const students = await Student.find({ cityName: city });
+    const students = await Student.find({ cityName: city, date:today });
     let arr = [];
     for (let i = 0; i < students.length; i++) {
       arr.push(students[i].rollno);

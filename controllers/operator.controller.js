@@ -149,7 +149,8 @@ export const delOp = async (req, res) => {
         let operator = await Operator.findOneAndDelete({operator_id:id});
         return res.status(200).json(operator);
     }catch(err){
-        console.log(err);
+        console.log(err);}
+}
 
 export const getValidBus = async (req, res) => {
     try {
