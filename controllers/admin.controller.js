@@ -176,9 +176,8 @@ export const getAdminDetails = async (req, res) => {
 
 export const getAllbuses = async (req, res) => {
   try {
-    const date = new Date().toISOString().split('T')[0].split('-').reverse().join('-')
-    console.log(date)
-    const buses = await ScanData.find({date:date}, { busNumber: 1 });
+    const {id} = req.params
+    const buses = await ScanData.find({date:id}, { busNumber: 1 });
     const busCounts = Object.entries(
       buses.reduce((acc, bus) => {
         acc[bus.busNumber] = (acc[bus.busNumber] || 0) + 1;
@@ -194,9 +193,9 @@ export const getAllbuses = async (req, res) => {
 
 export const getstudbydata = async (req, res) => {
   try {
-    const { id } = req.params;
+    const {number, date} = req.body;
     const buses = await ScanData.find(
-      { busNumber: id },
+      { busNumber: number, date:date },
       { busNumber: 1, rollNo: 1, firstName: 1, lastName: 1, operator_id:1 }
     );
     res.status(200).json(buses);
@@ -207,14 +206,14 @@ export const getstudbydata = async (req, res) => {
 
 export const filteredCities = async (req, res) => {
   try {
-    const { city } = req.body;
+    const { city, date } = req.body;
     const students = await Student.find({ cityName: city });
     let arr = [];
     for (let i = 0; i < students.length; i++) {
       arr.push(students[i].rollno);
     }
     const buses = await ScanData.find(
-      { rollNo: { $in: arr }, date:today },
+      { rollNo: { $in: arr }, date:date},
       { busNumber: 1, _id: 0 }
     );
     const busCounts = Object.entries(
@@ -291,7 +290,8 @@ export const allStudents = async (req, res) => {
 
 export const Unauthorized = async (req, res) => {
   try {
-    const unauth = await Fraud.find().sort({ date: -1 });
+    const {id} = req.params;
+    const unauth = await Fraud.find({date:id}).sort({ date: -1 });
     res.status(200).json(unauth);
   } catch (error) {
     console.log(error);

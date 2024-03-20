@@ -39,9 +39,9 @@ adminRouter.delete('/op/delOp/:id', delOp);
 
 adminRouter.post('/admin/changePass', changeAdminPassword);
 
-adminRouter.get('/admin/allbuses', verifyToken, getAllbuses);
+adminRouter.get('/admin/allbuses/:id', verifyToken, getAllbuses);
 
-adminRouter.get('/admin/stdbybus/:id', verifyToken, getstudbydata);
+adminRouter.post('/admin/stdbybus', verifyToken, getstudbydata);
 
 adminRouter.post('/admin/filtercities', verifyToken, filteredCities);
 
@@ -51,7 +51,7 @@ adminRouter.get('/admin/alloperators', verifyToken, alloperators);
 
 adminRouter.get('/admin/allStudents',verifyToken,allStudents);
 
-adminRouter.get('/admin/unauthorized',verifyToken, Unauthorized);
+adminRouter.get('/admin/unauthorized/:id',verifyToken, Unauthorized);
 
 adminRouter.get('/admin/unauthCount',verifyToken, UnauthCount);
 
